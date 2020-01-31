@@ -55,8 +55,8 @@ class FreeTrip extends Trip {
     }
 
     toString() {
-        let a= super.toString();
-        console.log("Free"+a);
+        let a = super.toString();
+        console.log("Free" + a);
     }
 }
 let parisTrip = new Trip("paris", "Paris", "img/paris.jpg");
@@ -70,3 +70,72 @@ const defaultTrip = Trip.getDefaultTrip();
 defaultTrip.toString();
 const freeTrip = new FreeTrip("nantes", "Nantes", "img/nantes.jpg");
 freeTrip.toString();
+
+class TripService {
+    constructor() {
+
+        this._set = new Set();
+        this._set.add(new Trip('paris', 'Paris', 'img/paris.jpg'));
+        this._set.add(new Trip('nantes', 'Nantes', 'img/nantes.jpg'));
+        this._set.add(new Trip('rio-de-janeiro', 'Rio de Janeiro', 'img/rio-de-janeiro.jpg'));
+    }
+}
+class Service extends TripService {
+    constructor() {
+        super();
+    }
+
+    findByName(tripName) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                for (const trip of this._set) {
+                    if (trip.name === tripName) {
+                        resolve(trip);
+                    }
+                    reject(`No trip found with name ${tripName}`)
+                }
+            }, 2000)
+
+
+        });
+    }
+}
+
+class PriceService {
+    constructor() {
+        // TODO Map of 2 trips     
+        this._mapPrice = new Map();
+        this._mapPrice.set('paris', 100);
+        this._mapPrice.set('rio-de-janeiro', 800);
+    }
+}
+class ServiceP extends PriceService {
+    constructor() {
+        super();
+
+    }
+    // no price for 'nantes'     }
+    findPriceByTripId(tripId) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const price = this._mapPrice.get(tripId);
+                if (price) {
+                    resolve(price);
+                } else {
+                    reject(`No price for trip id ${tripId}`);
+                }
+            }, 2000)
+        });
+    }
+}
+
+const tripService = new Service();
+tripService.findByName("Paris")
+    .then(tripFind => console.log(`Trip found : ${tripFind}`)) // ici
+    .catch(err => console.log(err));
+const priceService = new ServiceP();
+priceService.findPriceByTripId("paris")
+    .then(tripFind => console.log(`Price found : ${tripFind}`))
+    .catch(err => console.log(err)); // là
+
+
